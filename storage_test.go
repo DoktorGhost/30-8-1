@@ -7,7 +7,7 @@ import (
 
 // Создайте экземпляр хранилища
 func connectDb(t *testing.T) *storage.Storage {
-	s, err := storage.New("postgres://postgres:qwerty123@localhost:5432/testdb")
+	s, err := storage.New("postgres://test_user:qwerty123@localhost:5432/testdb")
 	if err != nil {
 		t.Fatalf("Failed to create storage: %v", err)
 	}

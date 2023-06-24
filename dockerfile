@@ -1,26 +1,17 @@
-# Установка базового образа
-FROM golang:latest
+FROM postgres:10.0-alpine
 
-# Установка PostgreSQL
-RUN apt-get update && apt-get install -y postgresql postgresql-contrib
+ENV POSTGRES_USER test_user
+ENV POSTGRES_PASSWORD qwerty123
+ENV POSTGRES_DB testdb
 
-# Установка Git (необходимо для загрузки зависимостей)
-RUN apt-get install -y git
+# Копирование файла schema.sql внутрь контейнера
+COPY schema.sql /docker-entrypoint-initdb.d/
 
-# Копирование исходного кода в контейнер
-COPY . /app
-WORKDIR /app
+# Установка правильных разрешений на файл
+RUN chmod 755 /docker-entrypoint-initdb.d/schema.sql
 
-# Загрузка зависимостей
-RUN go get -d -v ./...
-RUN go install -v ./...
+# Открытие порта для доступа к PostgreSQL
+EXPOSE 5432
 
-# Установка переменных окружения для подключения к PostgreSQL
-ENV DB_HOST=localhost
-ENV DB_PORT=5432
-ENV DB_USER=postgres
-ENV DB_PASSWORD=qwerty123
-ENV DB_NAME=testdb
-
-# Запуск контейнера с PostgreSQL и выполнение тестов
-CMD service postgresql start && sleep 5 && go test -v ./...
+# Запуск PostgreSQL при запуске контейнера
+CMD ["postgres"]
