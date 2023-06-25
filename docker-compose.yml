@@ -1,0 +1,23 @@
+version: '3'
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: qwerty123
+      POSTGRES_DB: testdb
+    volumes:
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+    ports:
+      - "5432:5432"
+
+  go-app:
+    build:
+      context: .
+      dockerfile: go.Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
